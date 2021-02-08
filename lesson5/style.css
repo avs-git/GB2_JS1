@@ -36,3 +36,7 @@
     background-color: #666;
     text-shadow: 0 0 1px #FFF;
 }
+
+.upsideDown {
+    transform: rotate(180deg);
+}

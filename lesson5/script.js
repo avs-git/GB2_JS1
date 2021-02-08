@@ -1,8 +1,9 @@
 const root = document.querySelector("#root");
 
-const getBorderTd = ({ content }) => {
+const getBorderTd = ({ content, isUpsideDown = false }) => {
   const td = document.createElement("td");
-  td.classList.add("tdBorder");
+  td.classList = isUpsideDown ? "upsideDown tdBorder" : "tdBorder";
+
   td.innerText = content;
 
   return td;
@@ -29,7 +30,7 @@ const setFigurePosition = ({ position, char, title, prevPosition, id }) => {
 
   if (prevPosition) {
     const prevPosTd = document.getElementById(prevPosition);
-    if (prevPosTd) prevPosition.innerText = "";
+    if (prevPosTd) prevPosition.innerHTML = "";
   }
 };
 
@@ -47,10 +48,14 @@ async function initDesk() {
         td = getBorderTd({
           content:
             col === 0 || col === COLS_QUANTITY + 1 ? "" : colsNames[col - 1],
+          isUpsideDown: col === COLS_QUANTITY + 1 || row === 0,
         });
       } else {
         if (col === 0 || col === COLS_QUANTITY + 1) {
-          td = getBorderTd({ content: rowsNames[row - 1] });
+          td = getBorderTd({
+            content: rowsNames[row - 1],
+            isUpsideDown: col === COLS_QUANTITY + 1 || row === 0,
+          });
         } else {
           td = getChessTd({ col: col - 1, row: row - 1 });
         }
