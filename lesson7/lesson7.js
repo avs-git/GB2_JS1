@@ -8,6 +8,11 @@ var gameIsRunning = false; // Запущена ли игра
 var snake_timer; // Таймер змейки
 var food_timer; // Таймер для еды
 var score = 0; // Результат
+var junkInterval = null;
+
+function updateScore(score) {
+  document.getElementById("scoreHolder").innerText = score;
+}
 
 function init() {
     prepareGameField(); // Генерация поля
@@ -66,8 +71,9 @@ function startGame() {
     gameIsRunning = true;
     respawn();//создали змейку
 
-    snake_timer = setInterval(move, SNAKE_SPEED);//каждые 200мс запускаем функцию move
-    setTimeout(createFood, 5000);
+  snake_timer = setInterval(move, SNAKE_SPEED); //каждые 200мс запускаем функцию move
+  setTimeout(createFood, 5000);
+  junkInterval = setInterval(createJunk, 2000);
 }
 
 /**
@@ -123,14 +129,17 @@ function move() {
         new_unit = document.getElementsByClassName('cell-' + (coord_y + 1) + '-' + (coord_x))[0];
     }
 
-    // Проверки
-    // 1) new_unit не часть змейки
-    // 2) Змейка не ушла за границу поля
-    //console.log(new_unit);
-    if (!isSnakeUnit(new_unit) && new_unit !== undefined) {
-        // Добавление новой части змейки
-        new_unit.setAttribute('class', new_unit.getAttribute('class') + ' snake-unit');
-        snake.push(new_unit);
+  // Проверки
+  // 1) new_unit не часть змейки
+  // 2) Змейка не ушла за границу поля
+  //console.log(new_unit);
+  if (!isSnakeUnit(new_unit) && new_unit !== undefined && !isJunk(new_unit)) {
+    // Добавление новой части змейки
+    new_unit.setAttribute(
+      "class",
+      new_unit.getAttribute("class") + " snake-unit"
+    );
+    snake.push(new_unit);
 
         // Проверяем, надо ли убрать хвост
        
@@ -176,9 +185,22 @@ function haveFood(unit) {
         check = true;
         createFood();
 
-        score++;
-    }
-    return check;
+    score++;
+    updateScore(score);
+  }
+  return check;
+}
+
+/**
+ * проверка на мусор
+ * @param unit
+ * @returns {boolean}
+ */
+function isJunk(unit) {
+  // нельзя проверять просто unit.className.includes(),
+  // так как это может дать ложно-положительный результат
+  // при наличии какого-нибудь класса типа junk-unit-test
+  return Object.values(unit.classList).includes("junk-unit");
 }
 
 /**
@@ -195,17 +217,37 @@ function createFood() {
         var food_cell = document.getElementsByClassName('cell-' + food_y + '-' + food_x)[0];
         var food_cell_classes = food_cell.getAttribute('class').split(' ');
 
-        // проверка на змейку
-        if (!food_cell_classes.includes('snake-unit')) {
-            var classes = '';
-            for (var i = 0; i < food_cell_classes.length; i++) {
-                classes += food_cell_classes[i] + ' ';
-            }
+    // проверка на змейку и мусор
+    if (
+      !food_cell_classes.includes("snake-unit") &&
+      !food_cell_classes.includes("junk-unit")
+    ) {
+      var classes = "";
+      for (var i = 0; i < food_cell_classes.length; i++) {
+        classes += food_cell_classes[i] + " ";
+      }
 
             food_cell.setAttribute('class', classes + 'food-unit');
             foodCreated = true;
         }
     }
+}
+
+function createJunk() {
+  // проверка на змейку и еду
+  do {
+    var junk_x = Math.floor(Math.random() * FIELD_SIZE_X);
+    var junk_y = Math.floor(Math.random() * FIELD_SIZE_Y);
+
+    var junk_cell = document.getElementsByClassName(
+      "cell-" + junk_y + "-" + junk_x
+    )[0];
+  } while (
+    Object.values(junk_cell.classList).includes("snake-unit") ||
+    Object.values(junk_cell.classList).includes("food-unit")
+  );
+
+  junk_cell.classList.add("junk-unit");
 }
 
 /**
@@ -243,9 +285,10 @@ function changeDirection(e) {
  * Функция завершения игры
  */
 function finishTheGame() {
-    gameIsRunning = false;
-    clearInterval(snake_timer);
-    alert('Вы проиграли! Ваш результат: ' + score.toString());
+  gameIsRunning = false;
+  clearInterval(junkInterval);
+  clearInterval(snake_timer);
+  alert("Вы проиграли! Ваш результат: " + score.toString());
 }
 
 /**

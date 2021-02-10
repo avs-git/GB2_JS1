@@ -26,6 +26,19 @@ td.game-table-cell{
 .food-unit{
     background-color: red;
 }
+.junk-unit{
+    position: relative;
+}
+.junk-unit::before{
+    content: '\2620';
+    position: absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    color: yellow;
+    line-height: 15px;
+}
 .buttons{
     display: inline-block;
 }
