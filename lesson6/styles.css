@@ -1,0 +1,53 @@
+.imagesWrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#thumbnailWrapper {
+    display: flex;
+    justify-content: space-around;
+    width: 50%;
+}
+
+#thumbnailWrapper img {
+    cursor: pointer;
+}
+
+.shopOuterWrapper {
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.shopInnerWrapper {
+    width: 50%;
+}
+
+#goodsWrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.goodItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.addToCartButton {
+    background: #00a15c;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.basketTable {
+    border-collapse: collapse;
+}
+
+.basketTable td {
+   border: 1px solid #777;
+    padding: 5px;
+}
